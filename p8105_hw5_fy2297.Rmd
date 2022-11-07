@@ -1,0 +1,49 @@
+---
+title: "p8105_hw5_fy2297"
+output: github_document
+---
+
+```{r}
+# load libraries
+library(tidyverse)
+library(rvest)
+library(httr)
+```
+
+# Problem 1
+
+
+# Problem 2
+```{r}
+# import data
+url = "https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv"
+homicide_df = read_csv(url) %>% 
+  janitor::clean_names()
+```
+
+```{r echo=FALSE}
+# data for raw data description
+n_row = nrow(homicide_df)
+n_col = ncol(homicide_df)
+```
+raw data description:
+The raw dataset has `r n_col` variables and `r n_row` observations. The main variables are reported date, victim race, sex, age and its corresponding city and state.
+
+```{r}
+# data manipulation, find the total number of homicides and the number of unsolved homicides within cities
+homecide_df = 
+  homicide_df %>% 
+  mutate(
+    city_state = paste(city, state, sep = ","),
+    disposition = ifelse(disposition == "Closed by arrest", "resolved", "unresolved")
+  ) %>% 
+  group_by(city) %>% 
+  summarize(
+    total_homicides = n(),
+    unsolved_homicides = sum(disposition == "unresolved")
+  )
+```
+
+
+
+# Problem 3
