@@ -107,7 +107,7 @@ test_func = function(n = 30, mu, sigma = 5){
 
 # generate 5000 datasets from the model and save mu_hat and p-value
 model_test =
-  rerun(10, test_func(mu = 0)) %>% 
+  rerun(5000, test_func(mu = 0)) %>% 
   bind_rows() %>% 
   mutate(
     mu_hat = t_test_stats$estimate,
@@ -123,7 +123,7 @@ model_test
 # repeat for different mu
 diff_mu_df = 
   tibble(mu_list = c(1:6)) %>% 
-  mutate(output = map(.x = mu_list, ~rerun(10,test_func(mu = .x)))) %>% 
+  mutate(output = map(.x = mu_list, ~rerun(5000,test_func(mu = .x)))) %>% 
   bind_rows() %>% 
   unnest() %>% 
   unnest(cols = output) %>% 
