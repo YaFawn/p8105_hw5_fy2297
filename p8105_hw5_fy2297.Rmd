@@ -8,6 +8,7 @@ output: github_document
 library(tidyverse)
 library(rvest)
 library(httr)
+library(purrr)
 ```
 
 # Problem 1
@@ -53,7 +54,7 @@ Baltimore_df =
   homicide_summary_df %>% 
   filter(city_state == "Baltimore,MD")
 
-test_stats = 
+test_stats_Baltimore = 
 prop.test(
   Baltimore_df$unsolved_homicides,Baltimore_df$total_homicides) %>% 
   broom::tidy()
@@ -61,7 +62,18 @@ prop.test(
 The estimated proportion of unsolved homicides is about 64.6% and the confidence interval is [62.8%, 66.3%].
 
 ```{r}
-
+# find statistics for all cities
+test_stats_all = 
+  homicide_summary_df %>% 
+  mutate(
+    test_stats = map2(unsolved_homicides, total_homicides, ~prop.test(.x, .y)),
+    test_stats = map(test_stats, broom::tidy)
+  ) %>% 
+  unnest() %>% 
+  arrange(estimate) %>% 
+  select(
+    city_state, estimate, conf.low, conf.high
+  )
 ```
 
 
