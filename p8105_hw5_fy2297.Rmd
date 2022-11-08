@@ -9,6 +9,7 @@ library(tidyverse)
 library(rvest)
 library(httr)
 library(purrr)
+library(patchwork)
 ```
 
 # Problem 1
@@ -83,7 +84,7 @@ test_stats_all %>%
   mutate(city_state = fct_reorder(city_state, estimate)) %>% 
   ggplot(aes(x = city_state, y = estimate)) + geom_point() + geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) +
   labs(title = "Unsolved Homicide Estimates and CIs",x = "City/State", y = "Proportions of Unsolved Homicides") +
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.9, hjust = 1)) +
   theme(plot.title = element_text(hjust = 0.5)) 
 ```
 In the previous part of the problem, Tulsa,AL was not removed from the dataset of statistics because it didn't influence anything. However, when making the plot, it was filtered out of the dataset to make the plot look more beautiful and tidy.
@@ -150,10 +151,35 @@ plot_1 =
 
 plot_1
 ```
+description: From the plot, there is a general increasing trend, which means as the effect size increases, the power also increases.
 
 ```{r}
-# make a second plot
-
+# make other plots
+plot_2 =
+  diff_mu_df %>% 
+  group_by(mu_list) %>% 
+  summarize(
+    ave_mu_hat = mean(mu_hat)
+  ) %>% 
+  ggplot(aes(x = mu_list, y = ave_mu_hat)) + geom_point() + geom_line()+
+  labs(title = "True mu vs Average mu (all)",x = "True Value of mu", y = "Average Value of mu") +
+  theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
+```{r}
+plot_3  = 
+  diff_mu_df %>% 
+  filter(p_value < 0.05) %>% 
+  group_by(mu_list) %>% 
+  summarize(
+    ave_mu_hat = mean(mu_hat)
+  ) %>% 
+  ggplot(aes(x = mu_list, y = ave_mu_hat)) + geom_point() + geom_line()+
+  labs(title = "True mu vs Average mu (rejected)",x = "True Value of mu", y = "Average Value of mu") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
 
+```{r}
+plot_2 + plot_3
+```
+description: from the right plot (for only rejected ones), as true value of mu increases, the average value of mu get closer to the true value, but when effect size is small, there are some deviations between average value and true value of mu because the power increases with the increase in effect size.
