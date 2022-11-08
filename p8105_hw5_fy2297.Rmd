@@ -59,7 +59,7 @@ prop.test(
   Baltimore_df$unsolved_homicides,Baltimore_df$total_homicides) %>% 
   broom::tidy()
 ```
-The estimated proportion of unsolved homicides is about 64.6% and the confidence interval is [62.8%, 66.3%].
+The estimated proportion of unsolved homicides in Baltimore,MD is about 64.6% and the confidence interval is [62.8%, 66.3%].
 
 ```{r}
 # find statistics for all cities
@@ -76,7 +76,22 @@ test_stats_all =
   )
 ```
 
-
+```{r}
+# create a plot that shows the estimates and CIs for each city
+test_stats_all %>% 
+  filter(city_state != "Tulsa,AL") %>% 
+  mutate(city_state = fct_reorder(city_state, estimate)) %>% 
+  ggplot(aes(x = city_state, y = estimate)) + geom_point() + geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) +
+  labs(title = "Unsolved Homicide Estimates and CIs",x = "City/State", y = "Proportions of Unsolved Homicides") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust = 1)) +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
 
 
 # Problem 3
+
+
+
+
+
+
