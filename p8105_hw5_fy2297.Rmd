@@ -119,9 +119,41 @@ model_test
 ```
 
 ```{r}
-
+# repeat for different mu
+diff_mu_df = 
+  tibble(mu_list = c(1:6)) %>% 
+  mutate(output = map(.x = mu_list, ~rerun(10,test_func(mu = .x)))) %>% 
+  bind_rows() %>% 
+  unnest() %>% 
+  unnest(cols = output) %>% 
+  mutate(
+    mu_hat = t_test_stats$estimate,
+    p_value = t_test_stats$p.value
+  ) %>% 
+  select(mu_list, mu_hat, p_value)
 ```
 
+```{r}
+# make a plot
+plot_1 =
+  diff_mu_df %>% 
+  group_by(mu_list) %>% 
+  summarize(
+    total_n = n(), reject_n = sum(p_value<0.05)
+  ) %>% 
+  mutate(
+    reject_prop = reject_n / total_n
+  ) %>% 
+  ggplot(aes(x = mu_list, y = reject_prop)) + geom_point() + geom_line()+
+  labs(title = "mu Value vs Rejection Proportion",x = "True Value of mu", y = "Rejection Proportion") +
+  theme(plot.title = element_text(hjust = 0.5)) 
 
+plot_1
+```
+
+```{r}
+# make a second plot
+
+```
 
 
